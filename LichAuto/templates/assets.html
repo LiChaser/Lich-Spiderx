@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">资产分类管理</h2>
+
+    <div class="row">
+        <!-- 简单目标 -->
+        <div class="col-md-4">
+            <div class="card-box border-success" style="border-top: 3px solid #28a745;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="text-success mb-0"><i class="fas fa-bolt"></i> 简单目标 ({{ simple_list|length }})</h5>
+                    <div class="btn-group">
+                        <a href="/api/download/simple_list.txt" class="btn btn-sm btn-outline-success" title="下载文件"><i class="fas fa-download"></i></a>
+                        <button class="btn btn-sm btn-outline-secondary copy-btn" data-target="simple-content" title="复制内容"><i class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+                <textarea id="simple-content" class="form-control" rows="15" readonly style="font-size: 0.85rem; background-color: #f8fff9;">{{ simple_list|join('\n') }}</textarea>
+            </div>
+        </div>
+
+        <!-- 复杂目标 -->
+        <div class="col-md-4">
+            <div class="card-box border-warning" style="border-top: 3px solid #ffc107;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="text-warning mb-0"><i class="fas fa-robot"></i> 复杂目标 ({{ complex_list|length }})</h5>
+                    <div class="btn-group">
+                        <a href="/api/download/complex_list.txt" class="btn btn-sm btn-outline-warning" title="下载文件"><i class="fas fa-download"></i></a>
+                        <button class="btn btn-sm btn-outline-secondary copy-btn" data-target="complex-content" title="复制内容"><i class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+                <textarea id="complex-content" class="form-control" rows="15" readonly style="font-size: 0.85rem; background-color: #fffdf5;">{{ complex_list|join('\n') }}</textarea>
+            </div>
+        </div>
+
+        <!-- 未知/失败目标 -->
+        <div class="col-md-4">
+            <div class="card-box border-secondary" style="border-top: 3px solid #6c757d;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="text-secondary mb-0"><i class="fas fa-question-circle"></i> 未知/失败 ({{ unknown_list|length }})</h5>
+                    <div class="btn-group">
+                        <a href="/api/download/unknown_list.txt" class="btn btn-sm btn-outline-secondary" title="下载文件"><i class="fas fa-download"></i></a>
+                        <button class="btn btn-sm btn-outline-secondary copy-btn" data-target="unknown-content" title="复制内容"><i class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+                <textarea id="unknown-content" class="form-control" rows="15" readonly style="font-size: 0.85rem; background-color: #f8f9fa; color: #666;">{{ unknown_list|join('\n') }}</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    $('.copy-btn').click(function() {
+        var targetId = $(this).data('target');
+        var content = $('#' + targetId).val();
+        navigator.clipboard.writeText(content).then(function() {
+            alert('内容已复制到剪贴板！');
+        }, function(err) {
+            console.error('无法复制: ', err);
+            // Fallback
+            $('#' + targetId).select();
+            document.execCommand("copy");
+            alert('内容已复制到剪贴板！');
+        });
+    });
+});
+</script>
+{% endblock %}

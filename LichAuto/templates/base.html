@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LichAuto Security Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="{{ url_for('static', filename='vendor/css/bootstrap.min.css') }}" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="{{ url_for('static', filename='vendor/css/all.min.css') }}" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="brand">
+            <i class="fas fa-shield-alt"></i> LichAuto
+        </div>
+        <nav class="nav flex-column">
+            <a class="nav-link {% if active_page == 'dashboard' %}active{% endif %}" href="/">
+                <i class="fas fa-tachometer-alt"></i> 仪表盘
+            </a>
+            <a class="nav-link {% if active_page == 'assets' %}active{% endif %}" href="/assets">
+                <i class="fas fa-server"></i> 资产分类
+            </a>
+            <a class="nav-link {% if active_page == 'config' %}active{% endif %}" href="/config">
+                <i class="fas fa-cogs"></i> 配置管理
+            </a>
+            <a class="nav-link {% if active_page == 'results' %}active{% endif %}" href="/results">
+                <i class="fas fa-table"></i> 扫描结果
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='vendor/js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/js/chart.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

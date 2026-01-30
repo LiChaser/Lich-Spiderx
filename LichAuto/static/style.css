@@ -1,0 +1,75 @@
+/* Dashboard Styles */
+body {
+    background-color: #f4f6f9;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sidebar {
+    height: 100vh;
+    background-color: #343a40;
+    color: #fff;
+    padding-top: 20px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    overflow-y: auto;
+}
+
+.sidebar .nav-link {
+    color: #c2c7d0;
+    padding: 10px 20px;
+    border-radius: 4px;
+    margin: 5px 10px;
+}
+
+.sidebar .nav-link:hover, .sidebar .nav-link.active {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.sidebar .brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30px;
+    color: #fff;
+}
+
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+}
+
+.card-box {
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+.stat-card {
+    border-left: 4px solid #007bff;
+}
+
+.stat-card.success { border-left-color: #28a745; }
+.stat-card.warning { border-left-color: #ffc107; }
+.stat-card.danger { border-left-color: #dc3545; }
+
+.log-terminal {
+    background-color: #1e1e1e;
+    color: #00ff00;
+    font-family: 'Consolas', 'Monaco', monospace;
+    padding: 15px;
+    height: 400px;
+    overflow-y: scroll;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+.log-line {
+    margin: 0;
+    padding: 2px 0;
+    border-bottom: 1px solid #333;
+}

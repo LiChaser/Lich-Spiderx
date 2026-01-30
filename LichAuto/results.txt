@@ -1,0 +1,10 @@
+http://127.0.0.1:8005 | admin:root
+http://127.0.0.1:8002 | root:123456
+http://127.0.0.1:8001 | root:123456
+http://127.0.0.1:8006 | admin:root
+http://127.0.0.1:8007 | root:123456
+http://127.0.0.1:8012 | root:123456
+http://127.0.0.1:8010 | root:root
+http://127.0.0.1:8018 | admin:root
+http://127.0.0.1:8016 | root:root
+http://127.0.0.1:8017 | root:root
