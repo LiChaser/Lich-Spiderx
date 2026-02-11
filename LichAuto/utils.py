@@ -1,6 +1,7 @@
 import logging
 import queue
 import logging.handlers
+import threading
 
 # 创建一个全局的日志队列，供Web端消费
 log_queue = queue.Queue()
@@ -34,17 +35,21 @@ queue_handler = QueueHandler()
 queue_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 logger.addHandler(queue_handler)
 
-# 全局初始化 OCR 引擎，避免每次调用重复加载模型导致卡顿
+# 全局初始化 OCR 引擎
 ocr_engine = None
+ocr_lock = threading.Lock() # 添加锁
+
 def init_ocr():
     global ocr_engine
     if ocr_engine is None:
-        try:
-            import ddddocr
-            ocr_engine = ddddocr.DdddOcr(show_ad=False)
-            logger.info("OCR 引擎初始化完成")
-        except Exception as e:
-            logger.error(f"OCR 引擎初始化失败: {e}")
+        with ocr_lock: # 使用锁防止并发初始化
+            if ocr_engine is None: # 双重检查
+                try:
+                    import ddddocr
+                    ocr_engine = ddddocr.DdddOcr(show_ad=False)
+                    logger.info("OCR 引擎初始化完成")
+                except Exception as e:
+                    logger.error(f"OCR 引擎初始化失败: {e}")
 
 def get_ocr_result(image_bytes):
     """

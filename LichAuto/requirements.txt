@@ -1,5 +1,6 @@
-playwright
-requests
-beautifulsoup4
+flask==3.0.0
+requests==2.31.0
+beautifulsoup4==4.12.2
+playwright==1.40.0
 ddddocr
-flask
+urllib3==2.1.0

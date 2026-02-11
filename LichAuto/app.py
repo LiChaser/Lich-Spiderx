@@ -74,7 +74,13 @@ task_manager = TaskManager()
 
 @app.route('/')
 def dashboard():
-    return render_template('dashboard.html', active_page='dashboard')
+    # 获取 listdir 下所有的 txt 文件供用户选择
+    url_files = []
+    listdir_path = os.path.join(config.BASE_DIR, 'listdir')
+    if os.path.exists(listdir_path):
+        url_files = [f for f in os.listdir(listdir_path) if f.endswith('.txt')]
+    
+    return render_template('dashboard.html', active_page='dashboard', url_files=url_files)
 
 @app.route('/assets')
 def assets_page():
@@ -190,7 +196,7 @@ def download_file(filename):
     if '/' in filename or '\\' in filename:
         return "非法路径", 400
     
-    path = os.path.join('listdir', filename)
+    path = os.path.join(config.BASE_DIR, 'listdir', filename)
     if os.path.exists(path):
         return send_file(path, as_attachment=True)
     else:
@@ -219,6 +225,33 @@ def start_task(action):
         if keywords:
             config.ERROR_KEYWORDS = keywords
             utils.logger.info(f"配置更新: 错误关键词 = {config.ERROR_KEYWORDS}")
+
+    # 更新成功关键词
+    success_keywords_str = request.form.get('success_keywords')
+    if success_keywords_str:
+        keywords = [k.strip() for k in success_keywords_str.replace('，', ',').split(',') if k.strip()]
+        if keywords:
+            config.SUCCESS_KEYWORDS = keywords
+            utils.logger.info(f"配置更新: 成功关键词 = {config.SUCCESS_KEYWORDS}")
+
+    # 处理自定义 URL 列表
+    custom_url_list = request.form.get('custom_url_list')
+    if custom_url_list and custom_url_list != 'default':
+        target_path = os.path.join(config.BASE_DIR, 'listdir', custom_url_list)
+        if os.path.exists(target_path):
+             # 临时覆盖全局配置中的路径，注意这对所有任务生效
+             # 更优雅的做法是传参给 run_task，但为了最小改动，这里修改 config
+             if action == 'simple_crack':
+                 config.SIMPLE_LIST_FILE = target_path
+                 utils.logger.info(f"配置更新: 简单爆破将使用自定义列表 -> {target_path}")
+             elif action == 'complex_crack':
+                 config.COMPLEX_LIST_FILE = target_path
+                 utils.logger.info(f"配置更新: 复杂爆破将使用自定义列表 -> {target_path}")
+             elif action == 'classify':
+                 config.URL_LIST_FILE = target_path
+                 utils.logger.info(f"配置更新: 分类任务将使用自定义列表 -> {target_path}")
+        else:
+            utils.logger.warning(f"自定义列表文件不存在: {target_path}，将使用默认逻辑")
 
     if action == 'classify':
         success, msg = task_manager.run_task(classifier.classify_targets, "资产分类")

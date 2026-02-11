@@ -68,11 +68,32 @@
                     </div>
 
                     <div class="mt-3">
+                        <label for="customUrlList" class="form-label fw-bold">
+                            <i class="fas fa-list"></i> 选择 URL 字典文件 (可选)
+                        </label>
+                        <select class="form-select" id="customUrlList">
+                            <option value="default" selected>使用默认 (url.txt 或分类列表)</option>
+                            {% for file in url_files %}
+                            <option value="{{ file }}">{{ file }}</option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">如果不选择，将自动使用分类后的列表或 url.txt。</small>
+                    </div>
+
+                    <div class="mt-3">
                         <label for="errorKeywords" class="form-label fw-bold">
                             <i class="fas fa-exclamation-triangle"></i> 自定义错误关键词 (逗号分隔)
                         </label>
                         <textarea class="form-control" id="errorKeywords" rows="2" placeholder="error, fail, incorrect...">{{ error_keywords|join(', ') }}</textarea>
                         <small class="text-muted">当页面响应包含这些词时，视为爆破失败。</small>
+                    </div>
+
+                    <div class="mt-3">
+                        <label for="successKeywords" class="form-label fw-bold">
+                            <i class="fas fa-check-circle"></i> 自定义成功关键词 (逗号分隔)
+                        </label>
+                        <textarea class="form-control" id="successKeywords" rows="2" placeholder="welcome, success, admin...">{{ success_keywords|join(', ') }}</textarea>
+                        <small class="text-muted">当页面响应包含这些词且无错误词时，视为爆破成功。</small>
                     </div>
                 </div>
 

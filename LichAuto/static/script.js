@@ -7,7 +7,9 @@ $(document).ready(function() {
     }, 2000);
     setInterval(function() {
         var terminal = $("#log-terminal");
-        if (terminal.length > 0 && taskRunning) {
+        // 只要终端元素存在，就尝试获取日志，不依赖 taskRunning 状态
+        // 这样即使任务结束了，残留的日志也能被刷出来
+        if (terminal.length > 0) {
             $.get("/api/logs", function(data) {
                 if (data.logs && data.logs.length > 0) {
                     data.logs.forEach(function(log) {
@@ -19,7 +21,7 @@ $(document).ready(function() {
                 }
             }).fail(function() {});
         }
-    }, 3000);
+    }, 2000); // 缩短轮询间隔到 2秒
 
     // 状态更新轮询
     setInterval(updateStats, 5000);
@@ -31,13 +33,17 @@ $(document).ready(function() {
         var stopOnSuccess = $("#stopOnSuccess").is(":checked"); // 获取开关状态
         var showBrowser = $("#showBrowser").is(":checked"); // 获取显示浏览器开关状态
         var errorKeywords = $("#errorKeywords").val(); // 获取错误关键词
+        var successKeywords = $("#successKeywords").val(); // 获取成功关键词
+        var customUrlList = $("#customUrlList").val(); // 获取自定义 URL 列表
         
         btn.prop("disabled", true);
         
         $.post("/api/start_task/" + action, { 
             stop_on_success: stopOnSuccess,
             show_browser: showBrowser,
-            error_keywords: errorKeywords
+            error_keywords: errorKeywords,
+            success_keywords: successKeywords,
+            custom_url_list: customUrlList
         }, function(resp) {
             alert(resp.message);
             btn.prop("disabled", false);

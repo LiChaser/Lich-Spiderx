@@ -21,6 +21,9 @@ os.makedirs("static/vendor/webfonts", exist_ok=True)
 
 for path, url in assets.items():
     try:
+        # 确保文件的父目录存在
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        
         print(f"正在下载: {url} -> {path}")
         resp = requests.get(url, timeout=30)
         if resp.status_code == 200:

